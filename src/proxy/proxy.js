@@ -1,14 +1,37 @@
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const { createProxyMiddleware } = require('http-proxy-middleware')
 
-// Definimos a dónde apunta cada microservicio
-const options = {
-  target: 'http://localhost:3001', // Dirección del microservicio de destino
-  changeOrigin: true,
-  pathRewrite: {
-    [`^/api/users`]: '', // Limpiamos la ruta para el microservicio
-  },
-};
+const createProxy = (targetUrl, pathPrefix) => {
+  return createProxyMiddleware({
+    target: targetUrl,
+    changeOrigin: true,
 
-const userProxy = createProxyMiddleware(options);
+    // Remueve el prefijo de la ruta antes de reenviar
+    // Ej: /api/curriculum/subjects → /subjects
+    pathRewrite: {
+      [`^/api/${pathPrefix}`]: ''
+    },
 
-module.exports = userProxy;
+    on: {
+      // Log de cada request proxeado
+      proxyReq: (proxyReq, req) => {
+        console.log(`[PROXY] ${req.method} /api/${pathPrefix}${req.path} → ${targetUrl}`)
+      },
+
+      // Log de cada respuesta
+      proxyRes: (proxyRes, req) => {
+        console.log(`[PROXY] Response ${proxyRes.statusCode} ← ${targetUrl}${req.path}`)
+      },
+
+      // Error al conectar con el microservicio
+      error: (err, req, res) => {
+        console.error(`[PROXY ERROR] No se pudo conectar a ${targetUrl}:`, err.message)
+        res.status(503).json({
+          error: 'service_unavailable',
+          message: `Service ${pathPrefix} is currently unavailable`
+        })
+      }
+    }
+  })
+}
+
+module.exports = { createProxy }
