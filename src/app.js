@@ -19,10 +19,7 @@ app.use(cors({
   credentials: true
 }))
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-
-// Health check
+// Health check global del gateway
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -31,8 +28,10 @@ app.get('/health', (req, res) => {
   })
 })
 
-// Rutas 
+// Rutas (ANTES de express.json() para no corromper el body de los proxies)
 app.use(routes)
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 // Ruta no encontrada 
 app.use((req, res) => {
