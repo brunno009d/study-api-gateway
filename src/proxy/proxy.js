@@ -1,4 +1,4 @@
-const { createProxyMiddleware } = require('http-proxy-middleware')
+const { createProxyMiddleware, fixRequestBody } = require('http-proxy-middleware')
 
 const createProxy = (targetUrl, pathPrefix) => {
   return createProxyMiddleware({
@@ -12,8 +12,9 @@ const createProxy = (targetUrl, pathPrefix) => {
     },
 
     on: {
-      // Log de cada request proxeado
-      proxyReq: (proxyReq, req) => {
+      // Log de cada request proxeado y arreglar el body consumido por express.json()
+      proxyReq: (proxyReq, req, res) => {
+        fixRequestBody(proxyReq, req);
         console.log(`[PROXY] ${req.method} /api/${pathPrefix}${req.path} → ${targetUrl}`)
       },
 
