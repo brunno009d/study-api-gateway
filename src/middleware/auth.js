@@ -1,7 +1,10 @@
-const jwt = require('jsonwebtoken')
-const config = require('../config/config')
+const { createClient } = require('@supabase/supabase-js')
+const config = require('../config')
 
-const authMiddleware = (req, res, next) => {
+// Inicializar cliente Supabase para validar tokens
+const supabase = createClient(config.supabase.url, config.supabase.anonKey)
+
+const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers['authorization']
 
   // Verificar que venga el header
@@ -24,29 +27,27 @@ const authMiddleware = (req, res, next) => {
   const token = parts[1]
 
   try {
-    // Verificar y decodificar el token con el secret de Supabase
-    const decoded = jwt.verify(token, config.supabase.jwtSecret)
+    // Validar el token directamente con Supabase (soporta ES256 de forma nativa)
+    const { data, error } = await supabase.auth.getUser(token)
 
-    // Guardar el user_id en el request para usarlo en el proxy
-    req.userId = decoded.sub
-    req.userRole = decoded.role || 'authenticated'
-
-    // Pasar el user_id como header al microservicio destino
-    req.headers['x-user-id'] = decoded.sub
-    req.headers['x-user-role'] = decoded.role || 'authenticated'
-
-    // Remover el JWT antes de reenviar (los microservicios no lo necesitan)
-    // Opcional: comenta esta línea si tus microservicios también validan JWT
-    // delete req.headers['authorization']
-
-    next()
-  } catch (error) {
-    if (error.name === 'TokenExpiredError') {
+    if (error) {
       return res.status(401).json({
-        error: 'token_expired',
-        message: 'Token has expired, please login again'
+        error: 'invalid_token',
+        message: error.message
       })
     }
+
+    // Guardar el user_id en el request para usarlo en el proxy
+    req.userId = data.user.id
+    req.userRole = data.user.role || 'authenticated'
+
+    // Pasar el user_id como header al microservicio destino
+    req.headers['x-user-id'] = data.user.id
+    req.headers['x-user-role'] = data.user.role || 'authenticated'
+
+    // Dejar el header authorization intacto para que el microservicio lo vuelva a validar y saqué el ID también
+    next()
+  } catch (error) {
     return res.status(401).json({
       error: 'invalid_token',
       message: 'Token is invalid'
