@@ -34,10 +34,6 @@ router.use('/api/notes',
   generalLimiter, authMiddleware,
   createProxy(config.services.notes, 'notes'))
 
-router.use('/api/materials',
-  generalLimiter, authMiddleware,
-  createProxy(config.services.notes, 'materials'))
-
 // Rate limit estricto para IA
 router.use('/api/ai',
   aiLimiter, authMiddleware,
