@@ -9,12 +9,12 @@ const config = {
     anonKey: process.env.SUPABASE_ANON_KEY,
   },
   services: {
-    user:       process.env.USER_SERVICE_URL,
+    user: process.env.USER_SERVICE_URL,
     curriculum: process.env.CURRICULUM_SERVICE_URL,
-    grades:     process.env.GRADES_SERVICE_URL,
-    calendar:   process.env.CALENDAR_SERVICE_URL,
-    notes:      process.env.NOTES_SERVICE_URL,
-    ai:         process.env.AI_SERVICE_URL,
+    grades: process.env.GRADES_SERVICE_URL,
+    calendar: process.env.CALENDAR_SERVICE_URL,
+    notes: process.env.NOTES_SERVICE_URL,
+    ai: process.env.AI_SERVICE_URL,
   }
 }
 
