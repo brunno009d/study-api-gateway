@@ -11,8 +11,10 @@ app.use(morgan('dev'))
 
 app.use(cors({
   origin: [
-    'http://localhost:5173',               // Vite local
-    'https://tu-frontend.vercel.app'       // Producción
+    'http://localhost:5173',               // Vite local (default)
+    'http://localhost:5174',               // Vite local (alternativo 1)
+    'http://localhost:5175',               // Vite local (alternativo 2)
+    'https://study-frontend-chi.vercel.app'       // Producción
   ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
