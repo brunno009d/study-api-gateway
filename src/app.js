@@ -15,6 +15,8 @@ app.use(cors({
     'http://localhost:5174',               // Vite local (alternativo 1)
     'http://localhost:5175',               // Vite local (alternativo 2)
     'https://study-frontend-chi.vercel.app'       // Producción
+    'https://popstudy.cl',                            // Producción Netlify
+    'https://www.popstudy.cl'                         // Producción Netlify
   ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
