@@ -1,29 +1,27 @@
-const express = require('express')
-const morgan = require('morgan')
-const cors = require('cors')
-const routes = require('./routes')
-const errorHandler = require('./middleware/errorHandler')
+import express from 'express'
+import morgan from 'morgan'
+import cors from 'cors'
+import routes from './routes/index.js'
+import errorHandler from './middleware/errorHandler.js'
 
 const app = express()
 
-// Middleware global 
 app.use(morgan('dev'))
 
 app.use(cors({
   origin: [
-    'http://localhost:5173',               // Vite local (default)
-    'http://localhost:5174',               // Vite local (alternativo 1)
-    'http://localhost:5175',               // Vite local (alternativo 2)
-    'https://study-frontend-chi.vercel.app',       // Producción
-    'https://popstudy.cl',                            // Producción Netlify
-    'https://www.popstudy.cl'                         // Producción Netlify
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'https://study-frontend-chi.vercel.app',
+    'https://popstudy.cl',
+    'https://www.popstudy.cl'
   ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }))
 
-// Health check global del gateway
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -32,12 +30,11 @@ app.get('/health', (req, res) => {
   })
 })
 
-// Rutas (ANTES de express.json() para no corromper el body de los proxies)
+// Rutas ANTES de express.json() para no corromper el body de los proxies
 app.use(routes)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// Ruta no encontrada 
 app.use((req, res) => {
   res.status(404).json({
     error: 'not_found',
@@ -45,7 +42,6 @@ app.use((req, res) => {
   })
 })
 
-// Manejo de errores (siempre al final)
 app.use(errorHandler)
 
-module.exports = app
+export default app
