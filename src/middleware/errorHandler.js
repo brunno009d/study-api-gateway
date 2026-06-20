@@ -1,7 +1,6 @@
 const errorHandler = (err, req, res, next) => {
   console.error(`[ERROR] ${req.method} ${req.path}:`, err.message)
 
-  // Error de conexión al microservicio
   if (err.code === 'ECONNREFUSED') {
     return res.status(503).json({
       error: 'service_unavailable',
@@ -10,7 +9,6 @@ const errorHandler = (err, req, res, next) => {
     })
   }
 
-  // Error genérico
   res.status(err.status || 500).json({
     error: 'internal_error',
     message: process.env.NODE_ENV === 'development'
@@ -19,4 +17,4 @@ const errorHandler = (err, req, res, next) => {
   })
 }
 
-module.exports = errorHandler
+export default errorHandler

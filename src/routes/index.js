@@ -1,8 +1,8 @@
-const { Router } = require('express')
-const { createProxy } = require('../proxy/proxy')
-const authMiddleware = require('../middleware/auth')
-const { generalLimiter, aiLimiter, authLimiter } = require('../middleware/rateLimiter')
-const config = require('../config')
+import { Router } from 'express'
+import { createProxy } from '../proxy/proxy.js'
+import authMiddleware from '../middleware/auth.js'
+import { generalLimiter, aiLimiter, authLimiter } from '../middleware/rateLimiter.js'
+import config from '../config/index.js'
 
 const router = Router()
 
@@ -34,9 +34,8 @@ router.use('/api/notes',
   generalLimiter, authMiddleware,
   createProxy(config.services.notes, 'notes'))
 
-// Rate limit estricto para IA
 router.use('/api/ai',
   aiLimiter, authMiddleware,
   createProxy(config.services.ai, 'ai'))
 
-module.exports = router
+export default router
