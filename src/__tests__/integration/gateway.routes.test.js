@@ -1,6 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import request from 'supertest'
 
+// ─── Mock config: apunta todos los servicios a puerto 1 (ECONNREFUSED garantizado) ──
+vi.mock('../../config/index.js', () => ({
+  default: {
+    port: 8080,
+    nodeEnv: 'test',
+    supabase: { jwtSecret: 'test-secret', url: 'https://test.supabase.co', anonKey: 'test-anon' },
+    services: {
+      user:       'http://localhost:1',
+      curriculum: 'http://localhost:1',
+      grades:     'http://localhost:1',
+      calendar:   'http://localhost:1',
+      notes:      'http://localhost:1',
+      ai:         'http://localhost:1',
+    },
+  },
+}))
+
 // ─── Mock Supabase para controlar la validación de JWT ────────────────────────
 const mockSb = vi.hoisted(() => ({ auth: { getUser: vi.fn() } }))
 vi.mock('@supabase/supabase-js', () => ({
