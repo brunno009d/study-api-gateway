@@ -1,4 +1,4 @@
-require('dotenv').config();
+import 'dotenv/config'
 
 const config = {
   port: process.env.PORT || 8080,
@@ -18,11 +18,9 @@ const config = {
   }
 }
 
-
-// Validar que el JWT secret esté configurado
 if (!config.supabase.jwtSecret) {
   console.error('ERROR: SUPABASE_JWT_SECRET no está definido en .env')
   process.exit(1)
 }
 
-module.exports = config
+export default config

@@ -1,29 +1,20 @@
-const { createProxyMiddleware, fixRequestBody } = require('http-proxy-middleware')
+import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware'
 
-const createProxy = (targetUrl, pathPrefix) => {
+export const createProxy = (targetUrl, pathPrefix) => {
   return createProxyMiddleware({
     target: targetUrl,
     changeOrigin: true,
-
-    // Remueve el prefijo de la ruta antes de reenviar
-    // Ej: /api/curriculum/subjects → /subjects
     pathRewrite: {
       [`^/api/${pathPrefix}`]: ''
     },
-
     on: {
-      // Log de cada request proxeado y arreglar el body consumido por express.json()
       proxyReq: (proxyReq, req, res) => {
-        fixRequestBody(proxyReq, req);
+        fixRequestBody(proxyReq, req)
         console.log(`[PROXY] ${req.method} /api/${pathPrefix}${req.path} → ${targetUrl}`)
       },
-
-      // Log de cada respuesta
       proxyRes: (proxyRes, req) => {
         console.log(`[PROXY] Response ${proxyRes.statusCode} ← ${targetUrl}${req.path}`)
       },
-
-      // Error al conectar con el microservicio
       error: (err, req, res) => {
         console.error(`[PROXY ERROR] No se pudo conectar a ${targetUrl}:`, err.message)
         res.status(503).json({
@@ -34,5 +25,3 @@ const createProxy = (targetUrl, pathPrefix) => {
     }
   })
 }
-
-module.exports = { createProxy }
