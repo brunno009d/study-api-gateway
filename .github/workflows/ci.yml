@@ -26,8 +26,7 @@ jobs:
       - name: Run tests
         env:
           SUPABASE_URL: https://placeholder.supabase.co
-          SUPABASE_SERVICE_KEY: placeholder-service-key
-          JWT_SECRET: placeholder-jwt-secret
+          SUPABASE_JWT_SECRET: placeholder-jwt-secret
           PORT: 8080
           USER_SERVICE_URL: http://localhost:3001
           CURRICULUM_SERVICE_URL: http://localhost:3002
