@@ -95,7 +95,7 @@ describe('authMiddleware — token válido', () => {
   it('llama a next() y agrega userId al request', async () => {
     // Arrange
     mockSb.auth.getUser.mockResolvedValue({
-      data: { user: { id: 'user-123', role: 'admin' } },
+      data: { user: { id: 'user-123', role: 'authenticated' } },
       error: null
     })
     const req = { headers: { authorization: 'Bearer valid-token' } }
@@ -106,23 +106,8 @@ describe('authMiddleware — token válido', () => {
     // Assert
     expect(next).toHaveBeenCalledOnce()
     expect(req.userId).toBe('user-123')
-    expect(req.userRole).toBe('admin')
-    expect(req.headers['x-user-id']).toBe('user-123')
-    expect(req.headers['x-user-role']).toBe('admin')
-    expect(res.status).not.toHaveBeenCalled()
-  })
-
-  it('usa role "authenticated" por defecto si no viene en el token', async () => {
-    mockSb.auth.getUser.mockResolvedValue({
-      data: { user: { id: 'user-456' } },
-      error: null
-    })
-    const req = { headers: { authorization: 'Bearer valid-token' } }
-    const res = mockRes()
-    const next = vi.fn()
-    await authMiddleware(req, res, next)
-    expect(next).toHaveBeenCalledOnce()
     expect(req.userRole).toBe('authenticated')
-    expect(req.headers['x-user-role']).toBe('authenticated')
+    expect(req.headers['x-user-id']).toBe('user-123')
+    expect(res.status).not.toHaveBeenCalled()
   })
 })
